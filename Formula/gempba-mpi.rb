@@ -1,9 +1,9 @@
 class GempbaMpi < Formula
   desc "GemPBA - parallel branch-and-bound C++23 framework (MPI multiprocessing flavor)"
   homepage "https://github.com/rapastranac/gempba"
-  url "https://api.github.com/repos/rapastranac/gempba/tarball/refs/tags/v4.1.0"
-  version "4.1.0"
-  sha256 "146b0e812f07290abedce4a9c4a3652ff17388643cece38fed337987f5dcdb5b"
+  url "https://api.github.com/repos/rapastranac/gempba/tarball/refs/tags/v4.1.1"
+  version "4.1.1"
+  sha256 "ad5286900e932c334a61b6f7c6440c94b7cb812798d8ce78c641acd18b9fcd52"
   license "MIT"
   head "https://github.com/rapastranac/gempba.git", branch: "main"
 
@@ -11,23 +11,38 @@ class GempbaMpi < Formula
   depends_on "pkg-config" => :build
   depends_on "boost"
   depends_on "fmt"
-  depends_on "gempba"
   depends_on "hwloc"
-  depends_on "libomp"
   depends_on "open-mpi"
   depends_on "spdlog"
 
+  # Self-contained alternative to gempba: ships the same headers and CMake
+  # config, so the two flavors cannot be linked into one prefix at once.
+  conflicts_with "gempba", because: "both install gempba's headers and CMake config; install one flavor"
+
+  resource "BS_thread_pool" do
+    url "https://github.com/rapastranac/thread-pool/archive/refs/tags/v5.1.0.1.tar.gz"
+    sha256 "08f745882d7fbd6536232d23af5e55e9ab1fb2c9eb1bb8665ec3f3505699d3c2"
+  end
+
+  resource "CPM.cmake" do
+    url "https://github.com/cpm-cmake/CPM.cmake/releases/download/v0.42.3/CPM.cmake"
+    sha256 "a609e875fd532b067174250f6abbc3dac22fe2d64869783fb1e80bda1625c844"
+  end
+
   def install
-    libomp = Formula["libomp"]
+    bs_thread_pool = buildpath/"deps/bs_thread_pool"
     args = std_cmake_args + [
       "-DGEMPBA_BUILD_TESTS=OFF",
       "-DGEMPBA_DEV_MODE=OFF",
       "-DGEMPBA_MULTIPROCESSING=ON",
-      "-DOpenMP_CXX_FLAGS=-Xpreprocessor -fopenmp -I#{libomp.opt_include}",
-      "-DOpenMP_CXX_LIB_NAMES=omp",
-      "-DOpenMP_omp_LIBRARY=#{libomp.opt_lib}/libomp.dylib",
+      "-DGEMPBA_INSTALL_SHARED_ARTIFACTS=ON",
       "-DCMAKE_PREFIX_PATH=#{Formula["boost"].opt_prefix}",
+      "-DFETCHCONTENT_SOURCE_DIR_BS_THREAD_POOL=#{bs_thread_pool}",
     ]
+
+    resource("BS_thread_pool").stage(bs_thread_pool)
+    (buildpath/"build/cmake").mkpath
+    resource("CPM.cmake").stage { cp "CPM.cmake", buildpath/"build/cmake/CPM.cmake" }
 
     system "cmake", "-S", ".", "-B", "build", *args
     system "cmake", "--build", "build", "--parallel"
@@ -43,8 +58,7 @@ class GempbaMpi < Formula
       find_package(gempba REQUIRED COMPONENTS mpi)
     CMAKE
 
-    gempba = Formula["gempba"]
     system "cmake", "-S", testpath, "-B", testpath/"build",
-           "-DCMAKE_PREFIX_PATH=#{opt_prefix};#{gempba.opt_prefix};#{Formula["boost"].opt_prefix}"
+           "-DCMAKE_PREFIX_PATH=#{opt_prefix};#{Formula["boost"].opt_prefix}"
   end
 end

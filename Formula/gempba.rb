@@ -1,9 +1,9 @@
 class Gempba < Formula
   desc "GemPBA - parallel branch-and-bound C++23 framework (multithreading flavor)"
   homepage "https://github.com/rapastranac/gempba"
-  url "https://api.github.com/repos/rapastranac/gempba/tarball/refs/tags/v4.1.2"
-  version "4.1.2"
-  sha256 "07dc35c4e016c4855ad24c549851c2cbbcfe0c9da608e30388456031023a2a7c"
+  url "https://api.github.com/repos/rapastranac/gempba/tarball/refs/tags/v4.1.3"
+  version "4.1.3"
+  sha256 "ab77028e1399fd67e2f80a26292e27cad319cbe17388ba09703c2d7e82c1b5ff"
   license "MIT"
   head "https://github.com/rapastranac/gempba.git", branch: "main"
 

@@ -1,9 +1,9 @@
 class GempbaMpi < Formula
   desc "GemPBA - parallel branch-and-bound C++23 framework (MPI multiprocessing flavor)"
   homepage "https://github.com/rapastranac/gempba"
-  url "https://api.github.com/repos/rapastranac/gempba/tarball/refs/tags/v4.2.0"
-  version "4.2.0"
-  sha256 "89375cce68aff96e1ca85a488e9c5daa7866ebaa510600a975566305c1ea8953"
+  url "https://api.github.com/repos/rapastranac/gempba/tarball/refs/tags/v4.3.0"
+  version "4.3.0"
+  sha256 "531216726514be6bf0366edd3dbb3042d86b3bfbdee9710fc50a82feb22ca5c5"
   license "MIT"
   head "https://github.com/rapastranac/gempba.git", branch: "main"
 
@@ -20,8 +20,8 @@ class GempbaMpi < Formula
   conflicts_with "gempba", because: "both install gempba's headers and CMake config; install one flavor"
 
   resource "BS_thread_pool" do
-    url "https://github.com/rapastranac/thread-pool/archive/refs/tags/v5.1.0.1.tar.gz"
-    sha256 "08f745882d7fbd6536232d23af5e55e9ab1fb2c9eb1bb8665ec3f3505699d3c2"
+    url "https://github.com/rapastranac/thread-pool/archive/refs/tags/v5.1.0.3.tar.gz"
+    sha256 "136e7ad700a1c29a2e697b5dd1513c57642d4e674f611e42c2ce0670a72c9230"
   end
 
   resource "CPM.cmake" do

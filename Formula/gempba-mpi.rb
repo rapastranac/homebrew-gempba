@@ -1,19 +1,18 @@
 class GempbaMpi < Formula
-  desc "GemPBA - parallel branch-and-bound C++23 framework (MPI multiprocessing flavor)"
+  desc "GemPBA - hybrid parallel C++23 framework (MPI multiprocessing flavor)"
   homepage "https://github.com/rapastranac/gempba"
-  url "https://api.github.com/repos/rapastranac/gempba/tarball/refs/tags/v4.3.0"
-  version "4.3.0"
-  sha256 "531216726514be6bf0366edd3dbb3042d86b3bfbdee9710fc50a82feb22ca5c5"
+  url "https://api.github.com/repos/rapastranac/gempba/tarball/refs/tags/v4.4.0"
+  version "4.4.0"
+  sha256 "74f3a82f75cb21a8b8a746c9abdd2476e55180db5b92224ee48d880a25044ff8"
   license "MIT"
   head "https://github.com/rapastranac/gempba.git", branch: "main"
 
   depends_on "cmake" => :build
-  depends_on "pkg-config" => :build
-  depends_on "boost"
+  depends_on "spdlog" => :build
   depends_on "fmt"
   depends_on "hwloc"
   depends_on "open-mpi"
-  depends_on "spdlog"
+  depends_on "pkgconf"
 
   # Self-contained alternative to gempba: ships the same headers and CMake
   # config, so the two flavors cannot be linked into one prefix at once.
@@ -36,7 +35,6 @@ class GempbaMpi < Formula
       "-DGEMPBA_DEV_MODE=OFF",
       "-DGEMPBA_MULTIPROCESSING=ON",
       "-DGEMPBA_INSTALL_SHARED_ARTIFACTS=ON",
-      "-DCMAKE_PREFIX_PATH=#{Formula["boost"].opt_prefix}",
       "-DFETCHCONTENT_SOURCE_DIR_BS_THREAD_POOL=#{bs_thread_pool}",
     ]
 
@@ -59,6 +57,6 @@ class GempbaMpi < Formula
     CMAKE
 
     system "cmake", "-S", testpath, "-B", testpath/"build",
-           "-DCMAKE_PREFIX_PATH=#{opt_prefix};#{Formula["boost"].opt_prefix}"
+           "-DCMAKE_PREFIX_PATH=#{opt_prefix}"
   end
 end

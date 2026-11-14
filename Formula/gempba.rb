@@ -1,17 +1,17 @@
 class Gempba < Formula
-  desc "GemPBA - hybrid parallel C++23 framework (multithreading flavor)"
+  desc "GemPBA - hybrid parallel C++23 framework"
   homepage "https://github.com/rapastranac/gempba"
-  url "https://api.github.com/repos/rapastranac/gempba/tarball/refs/tags/v4.4.0"
-  version "4.4.0"
-  sha256 "74f3a82f75cb21a8b8a746c9abdd2476e55180db5b92224ee48d880a25044ff8"
+  url "https://api.github.com/repos/rapastranac/gempba/tarball/refs/tags/v5.0.0"
+  version "5.0.0"
+  sha256 "8e023c7dcb01c9a8b0bb9300a992b3523106969fbfe6bab01db72058141c8eb3"
   license "MIT"
   head "https://github.com/rapastranac/gempba.git", branch: "main"
 
   depends_on "cmake" => :build
+  depends_on "fmt" => :build
+  depends_on "pkgconf" => :build
   depends_on "spdlog" => :build
-  depends_on "fmt"
   depends_on "hwloc"
-  depends_on "pkgconf"
 
   resource "BS_thread_pool" do
     url "https://github.com/rapastranac/thread-pool/archive/refs/tags/v5.1.0.3.tar.gz"
@@ -27,8 +27,7 @@ class Gempba < Formula
     bs_thread_pool = buildpath/"deps/bs_thread_pool"
     args = std_cmake_args + [
       "-DGEMPBA_BUILD_TESTS=OFF",
-      "-DGEMPBA_DEV_MODE=OFF",
-      "-DGEMPBA_MULTIPROCESSING=OFF",
+      "-DGEMPBA_BUILD_MPI=OFF",
       "-DFETCHCONTENT_SOURCE_DIR_BS_THREAD_POOL=#{bs_thread_pool}",
     ]
 
@@ -38,7 +37,7 @@ class Gempba < Formula
 
     system "cmake", "-S", ".", "-B", "build", *args
     system "cmake", "--build", "build", "--parallel"
-    system "cmake", "--install", "build"
+    system "cmake", "--install", "build", "--component", "core"
   end
 
   test do
@@ -47,7 +46,7 @@ class Gempba < Formula
       project(gempba_smoke LANGUAGES CXX)
       set(CMAKE_CXX_STANDARD 23)
       set(CMAKE_CXX_STANDARD_REQUIRED ON)
-      find_package(gempba REQUIRED COMPONENTS mt)
+      find_package(gempba REQUIRED)
     CMAKE
 
     system "cmake", "-S", testpath, "-B", testpath/"build",
